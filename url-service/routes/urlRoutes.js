@@ -1,6 +1,9 @@
 const express = require("express");
 const shortid = require("shortid");
+const axios = require("axios");
+
 const Url = require("../models/Url");
+
 const router = express.Router();
 
 router.post("/shorten", async (req, res) => {
@@ -9,7 +12,19 @@ router.post("/shorten", async (req, res) => {
 
     if (!url) {
       return res.status(400).json({
-        message: "URL required",
+        message: "URL is required",
+      });
+    }
+
+    // Optional: prevent duplicate URLs
+    const existingUrl = await Url.findOne({
+      originalUrl: url,
+    });
+
+    if (existingUrl) {
+      return res.status(200).json({
+        shortCode: existingUrl.shortCode,
+        shortUrl: `http://localhost:5000/${existingUrl.shortCode}`,
       });
     }
 
@@ -22,9 +37,11 @@ router.post("/shorten", async (req, res) => {
 
     res.status(201).json({
       shortCode: newUrl.shortCode,
+      shortUrl: `http://localhost:5000/${newUrl.shortCode}`,
     });
-
   } catch (error) {
+    console.error(error);
+
     res.status(500).json({
       message: error.message,
     });
@@ -45,9 +62,24 @@ router.get("/:shortCode", async (req, res) => {
       });
     }
 
-    res.redirect(url.originalUrl);
+    
 
+    // Track analytics but don't fail redirect if analytics service is down
+    try {
+      await axios.post("http://localhost:5001/track", {
+        shortCode,
+      });
+    } catch (analyticsError) {
+      console.log(
+        "Analytics service unavailable:",
+        analyticsError.message
+      );
+    }
+
+    return res.redirect(url.originalUrl);
   } catch (error) {
+    console.error(error);
+
     res.status(500).json({
       message: error.message,
     });
