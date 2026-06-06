@@ -28,4 +28,7 @@ spec:
 
           env:
             - name: MONGO_URI
-              value: mongodb://mongodb:27017/kubeshort
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: MONGO_URI
