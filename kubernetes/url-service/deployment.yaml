@@ -32,3 +32,9 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: MONGO_URI
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: JWT_SECRET
