@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: url-service
+
+spec:
+  containers:
+    - name: url-service
+      image: kubeshort-url-service:latest
+
+      imagePullPolicy: Never
+
+      ports:
+        - containerPort: 5000
+
+      env:
+        - name: MONGO_URI
+          value: mongodb://mongodb:27017/kubeshort
