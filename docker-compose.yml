@@ -1,0 +1,45 @@
+services:
+
+  mongodb:
+    image: mongo:7
+
+    container_name: mongodb
+
+    ports:
+      - "27017:27017"
+
+    volumes:
+      - mongo-data:/data/db
+
+  url-service:
+    build:
+      context: ./url-service
+
+    container_name: url-service
+
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - .env
+
+    depends_on:
+      - mongodb
+
+  analytics-service:
+    build:
+      context: ./analytics-service
+
+    container_name: analytics-service
+
+    ports:
+      - "5001:5001"
+
+    env_file:
+      - .env
+
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo-data:

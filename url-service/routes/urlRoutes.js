@@ -66,7 +66,7 @@ router.get("/:shortCode", async (req, res) => {
 
     // Track analytics but don't fail redirect if analytics service is down
     try {
-      await axios.post("http://localhost:5001/track", {
+      await axios.post("http://analytics-service:5001/track", {
         shortCode,
       });
     } catch (analyticsError) {
