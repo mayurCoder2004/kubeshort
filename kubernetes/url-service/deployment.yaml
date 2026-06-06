@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: url-service
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: url-service
+
+  template:
+    metadata:
+      labels:
+        app: url-service
+
+    spec:
+      containers:
+        - name: url-service
+          image: kubeshort-url-service:latest
+
+          imagePullPolicy: Never
+
+          ports:
+            - containerPort: 5000
+
+          env:
+            - name: MONGO_URI
+              value: mongodb://mongodb:27017/kubeshort
